@@ -123,6 +123,7 @@ ImageIO cannot write WebP. Details: [`docs/decisions/001-encode-backends.md`](do
 
 ```bash
 ./scripts/check.sh     # macOS: rebuild + encode fixtures/screenshot.png
+git tag v1.0.1 && git push origin v1.0.1   # GitHub Release (macOS zip + Windows exe)
 ```
 
 `scripts/check.sh` must keep producing a RIFF/WEBP smaller than the fixture. Agent rules: [`AGENTS.md`](AGENTS.md). Specs: [`docs/superpowers/specs/`](docs/superpowers/specs/).

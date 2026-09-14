@@ -125,6 +125,7 @@ ImageIO は WebP を書けません。詳細: [`docs/decisions/001-encode-backen
 
 ```bash
 ./scripts/check.sh     # macOS: 再ビルド + fixtures/screenshot.png をエンコード
+git tag v1.0.1 && git push origin v1.0.1   # GitHub Release（macOS zip + Windows exe）
 ```
 
 `scripts/check.sh` は、フィクスチャより小さい RIFF/WEBP を出し続けなければなりません。エージェント向けの規則: [`AGENTS.md`](../../AGENTS.md)。仕様: [`docs/superpowers/specs/`](../superpowers/specs/)。

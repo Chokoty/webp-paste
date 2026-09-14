@@ -32,3 +32,14 @@ Needs Homebrew `webp` on macOS (`libwebp.a` + `libsharpyuv.a`, statically linked
 - `win/` WinForms tray. `WM_CLIPBOARDUPDATE`, `Clipboard.SetFileDropList`.
 - `index.html` fallback for drag/save. Chrome cannot `clipboard.write(image/webp)`.
 - `scripts/check.sh` is the regression gate. Do not weaken it.
+
+## Release
+
+Push a version tag. Actions builds Mac + Windows and publishes GitHub Releases.
+
+```bash
+git tag v1.0.1
+git push origin v1.0.1
+```
+
+Do not attach binaries by hand unless the workflow is down. Asset names must stay `webp-paste-macos-arm64.zip` and `webp-paste-windows-x64.exe`.

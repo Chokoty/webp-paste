@@ -69,7 +69,14 @@ WebP 静态链接 libwebp（Homebrew 只在构建时需要）。AVIF 走 ImageIO
 
 ## 安装
 
+- **[从 Releases 下载](https://github.com/Chokoty/webp-paste/releases/latest)**
+- 直链：[macOS Apple Silicon](https://github.com/Chokoty/webp-paste/releases/latest/download/webp-paste-macos-arm64.zip) · [Windows x64](https://github.com/Chokoty/webp-paste/releases/latest/download/webp-paste-windows-x64.exe)
+
 ### macOS
+
+解压后打开 `webp-paste.app`。未签名：第一次请 **右键 → 打开**。
+
+或自行构建：
 
 ```bash
 brew install webp          # 仅构建时需要；应用链接 libwebp.a
@@ -83,14 +90,16 @@ open mac/dist/webp-paste.app
 
 ### Windows
 
-构建需要 [.NET 8 SDK](https://dot.net)：
+运行 `webp-paste-windows-x64.exe`。未签名：SmartScreen 可能会警告。运行不需要 .NET SDK。
+
+或用 [.NET 8 SDK](https://dot.net) 构建：
 
 ```powershell
 ./win/build.ps1
 ./win/dist/webp-paste.exe
 ```
 
-每次推送到 `main`，CI 都会上传 `webp-paste.exe` 产物。托盘图标 → 复制 → `Ctrl+V`。只有 WebP（没有 AVIF）。临时文件：`%LOCALAPPDATA%\webp-paste\`。
+托盘图标 → 复制 → `Ctrl+V`。只有 WebP（没有 AVIF）。临时文件：`%LOCALAPPDATA%\webp-paste\`。
 
 ## 网页备用（拖拽 / 保存）
 

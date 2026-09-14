@@ -67,7 +67,14 @@ Same quality and max edge. Clipboard write is a file drop list, not a DIB, so ca
 
 ## Install
 
+- **[Download from Releases](https://github.com/Chokoty/webp-paste/releases/latest)**
+- Direct: [macOS Apple Silicon](https://github.com/Chokoty/webp-paste/releases/latest/download/webp-paste-macos-arm64.zip) · [Windows x64](https://github.com/Chokoty/webp-paste/releases/latest/download/webp-paste-windows-x64.exe)
+
 ### macOS
+
+Unzip and open `webp-paste.app`. Unsigned: first launch is **right-click → Open**.
+
+Or build:
 
 ```bash
 brew install webp          # build only; the app links libwebp.a
@@ -81,14 +88,16 @@ Temps: `~/Library/Caches/webp-paste/`.
 
 ### Windows
 
-Needs [.NET 8 SDK](https://dot.net) to build:
+Run `webp-paste-windows-x64.exe`. Unsigned: SmartScreen may warn. No .NET SDK needed to run.
+
+Or build with [.NET 8 SDK](https://dot.net):
 
 ```powershell
 ./win/build.ps1
 ./win/dist/webp-paste.exe
 ```
 
-CI also publishes `webp-paste.exe` as a workflow artifact on each push to `main`. Tray icon → copy → `Ctrl+V`. WebP only (no AVIF). Temps: `%LOCALAPPDATA%\webp-paste\`.
+Tray icon → copy → `Ctrl+V`. WebP only (no AVIF). Temps: `%LOCALAPPDATA%\webp-paste\`.
 
 ## Web fallback
 

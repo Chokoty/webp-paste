@@ -69,7 +69,14 @@ WebP は libwebp を静的リンクします（Homebrew はビルド時だけ）
 
 ## インストール
 
+- **[Releases から入手](https://github.com/Chokoty/webp-paste/releases/latest)**
+- 直接: [macOS Apple Silicon](https://github.com/Chokoty/webp-paste/releases/latest/download/webp-paste-macos-arm64.zip) · [Windows x64](https://github.com/Chokoty/webp-paste/releases/latest/download/webp-paste-windows-x64.exe)
+
 ### macOS
+
+zip を解凍して `webp-paste.app` を開きます。未署名なので、初回は **右クリック → 開く**。
+
+またはビルド:
 
 ```bash
 brew install webp          # ビルド時のみ。アプリは libwebp.a をリンクします
@@ -83,14 +90,16 @@ open mac/dist/webp-paste.app
 
 ### Windows
 
-ビルドには [.NET 8 SDK](https://dot.net) が必要です。
+`webp-paste-windows-x64.exe` を実行します。未署名なので SmartScreen が警告することがあります。実行に .NET SDK は不要です。
+
+または [.NET 8 SDK](https://dot.net) でビルド:
 
 ```powershell
 ./win/build.ps1
 ./win/dist/webp-paste.exe
 ```
 
-`main` への push のたびに CI が `webp-paste.exe` を成果物として上げます。トレイアイコン → コピー → `Ctrl+V`。WebP のみ（AVIF なし）。一時ファイル: `%LOCALAPPDATA%\webp-paste\`。
+トレイアイコン → コピー → `Ctrl+V`。WebP のみ（AVIF なし）。一時ファイル: `%LOCALAPPDATA%\webp-paste\`。
 
 ## Web フォールバック（ドラッグ / 保存）
 

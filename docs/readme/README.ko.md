@@ -67,7 +67,14 @@ WebP는 libwebp를 정적 링크합니다 (Homebrew는 빌드할 때만). AVIF�
 
 ## 설치
 
+- **[Releases에서 받기](https://github.com/Chokoty/webp-paste/releases/latest)**
+- 직접: [macOS Apple Silicon](https://github.com/Chokoty/webp-paste/releases/latest/download/webp-paste-macos-arm64.zip) · [Windows x64](https://github.com/Chokoty/webp-paste/releases/latest/download/webp-paste-windows-x64.exe)
+
 ### macOS
+
+zip을 풀고 `webp-paste.app`을 엽니다. 서명 없음: 처음엔 **우클릭 → 열기**.
+
+또는 빌드:
 
 ```bash
 brew install webp          # 빌드할 때만. 앱은 libwebp.a를 링크합니다
@@ -81,14 +88,16 @@ open mac/dist/webp-paste.app
 
 ### Windows
 
-빌드하려면 [.NET 8 SDK](https://dot.net)가 필요합니다.
+`webp-paste-windows-x64.exe`를 실행합니다. 서명 없음: SmartScreen 경고가 날 수 있습니다. 실행에 .NET SDK는 필요 없습니다.
+
+또는 [.NET 8 SDK](https://dot.net)로 빌드:
 
 ```powershell
 ./win/build.ps1
 ./win/dist/webp-paste.exe
 ```
 
-`main`에 푸시할 때마다 CI가 `webp-paste.exe` 아티팩트를 올립니다. 트레이 아이콘 → 복사 → `Ctrl+V`. WebP만 (AVIF 없음). 임시 파일: `%LOCALAPPDATA%\webp-paste\`.
+트레이 아이콘 → 복사 → `Ctrl+V`. WebP만 (AVIF 없음). 임시 파일: `%LOCALAPPDATA%\webp-paste\`.
 
 ## 웹 페이지 (드래그/저장)
 

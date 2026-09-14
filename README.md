@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <sub><a href="docs/readme/README.ko.md">한국어</a></sub>
+  <sub><a href="docs/readme/README.zh-CN.md">中文</a> · <a href="docs/readme/README.ja.md">日本語</a> · <a href="docs/readme/README.ko.md">한국어</a></sub>
 </p>
 
 <p align="center">

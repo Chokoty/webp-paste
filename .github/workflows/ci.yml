@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install libwebp
+        run: brew install webp
+      - name: Build and convert fixture
+        run: ./scripts/check.sh
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Publish
+        shell: pwsh
+        run: ./win/build.ps1
+      - name: Convert fixture
+        shell: pwsh
+        run: |
+          $out = Join-Path $env:TEMP "out.webp"
+          & ./win/dist/webp-paste.exe --convert ./fixtures/screenshot.png $out
+          if ($LASTEXITCODE -ne 0) { throw "convert failed: $LASTEXITCODE" }
+          $bytes = [IO.File]::ReadAllBytes($out)
+          $riff = [Text.Encoding]::ASCII.GetString($bytes[0..3])
+          $tag = [Text.Encoding]::ASCII.GetString($bytes[8..11])
+          if ($riff -ne "RIFF" -or $tag -ne "WEBP") { throw "not webp: $riff $tag" }
+          $src = (Get-Item ./fixtures/screenshot.png).Length
+          if ($bytes.Length -ge $src) { throw "not smaller: $($bytes.Length) >= $src" }
+          Write-Host "ok webp $($bytes.Length) from $src"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: webp-paste-windows
+          path: win/dist/webp-paste.exe

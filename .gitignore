@@ -1,0 +1,10 @@
+.DS_Store
+*.log
+.grok/
+mac/dist/
+win/bin/
+win/obj/
+win/dist/
+dist/
+*.user
+.vs/

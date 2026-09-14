@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>webp-paste</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%23efe6d6' width='32' height='32'/%3E%3Crect fill='%231a1612' x='3' y='3' width='26' height='26' fill-opacity='0' stroke='%231a1612' stroke-width='2'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-size='14' font-family='Georgia,serif' fill='%23c43c11'%3EW%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #1a1612;
+        --paper: #efe6d6;
+        --rule: #c9bba3;
+        --stamp: #c43c11;
+        --ok: #2c6e49;
+        --muted: #6b5e4e;
+        --ease: cubic-bezier(0.23, 1, 0.32, 1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "IBM Plex Sans KR", sans-serif;
+        word-break: keep-all;
+      }
+
+      body {
+        background-image: repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 47px,
+            rgba(26, 22, 18, 0.04) 47px,
+            rgba(26, 22, 18, 0.04) 48px
+          ),
+          repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 47px,
+            rgba(26, 22, 18, 0.04) 47px,
+            rgba(26, 22, 18, 0.04) 48px
+          );
+      }
+
+      .app {
+        width: min(680px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 80px;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+        border-bottom: 2px solid var(--ink);
+        padding-bottom: 8px;
+      }
+
+      h1 {
+        font-family: "Instrument Serif", serif;
+        font-size: clamp(32px, 6vw, 44px);
+        font-weight: 400;
+        line-height: 0.9;
+        margin: 0;
+        letter-spacing: -0.03em;
+      }
+
+      .ticket {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .lede {
+        margin: 10px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .stage {
+        margin-top: 16px;
+        min-height: 200px;
+        border: 2px dashed var(--ink);
+        background: rgba(255, 255, 255, 0.35);
+        display: grid;
+        place-items: center;
+      }
+
+      .stage:focus {
+        outline: none;
+      }
+
+      .stage:focus-visible {
+        outline: 2px solid var(--stamp);
+        outline-offset: 3px;
+      }
+
+      .stage.hot {
+        background: #fff4e0;
+        border-style: solid;
+      }
+
+      .stage.has-image {
+        min-height: 0;
+        border-style: solid;
+        background: #fff;
+        cursor: grab;
+      }
+
+      .hint {
+        text-align: center;
+        padding: 28px 16px;
+      }
+
+      .hint p {
+        margin: 0 0 12px;
+        font-size: 14px;
+      }
+
+      .hint kbd {
+        font-family: "JetBrains Mono", monospace;
+        border: 1px solid var(--ink);
+        padding: 2px 6px;
+        background: #fff;
+      }
+
+      .preview-wrap {
+        display: none;
+        width: 100%;
+      }
+
+      .stage.has-image .preview-wrap {
+        display: block;
+      }
+
+      .stage.has-image .hint {
+        display: none;
+      }
+
+      .preview-wrap a {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+      }
+
+      #preview {
+        display: block;
+        max-width: 100%;
+        max-height: 42vh;
+        width: auto;
+        height: auto;
+        margin: 0 auto;
+        background: #fff;
+      }
+
+      .meta {
+        display: none;
+        margin-top: 14px;
+        gap: 12px;
+      }
+
+      .app.has-image .meta {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .sizes {
+        display: flex;
+        gap: 20px;
+        align-items: baseline;
+      }
+
+      .sizes dt {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 2px;
+      }
+
+      .sizes dd {
+        margin: 0;
+        font-family: "Instrument Serif", serif;
+        font-size: 28px;
+        line-height: 1;
+      }
+
+      .sizes .after dd {
+        color: var(--stamp);
+      }
+
+      .delta {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: var(--ok);
+        margin: 0;
+        align-self: end;
+        padding-bottom: 4px;
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+        border-top: 1px solid var(--rule);
+        padding-top: 12px;
+      }
+
+      button,
+      .btn {
+        appearance: none;
+        border: 2px solid var(--ink);
+        background: var(--ink);
+        color: var(--paper);
+        font-family: "IBM Plex Sans KR", sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 8px 12px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: transform 140ms var(--ease), box-shadow 140ms var(--ease);
+      }
+
+      button.ghost,
+      .btn.ghost {
+        background: transparent;
+        color: var(--ink);
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        button:hover,
+        .btn:hover {
+          transform: translate(-1px, -1px);
+          box-shadow: 3px 3px 0 var(--ink);
+        }
+      }
+
+      button:active,
+      .btn:active {
+        transform: scale(0.97);
+        box-shadow: none;
+      }
+
+      footer {
+        margin-top: 18px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 24px;
+        transform: translateX(-50%) translateY(10px);
+        opacity: 0;
+        pointer-events: none;
+        background: var(--ink);
+        color: var(--paper);
+        font-size: 13px;
+        padding: 10px 16px;
+        z-index: 30;
+        max-width: min(90vw, 420px);
+        text-align: center;
+        transition: opacity 180ms var(--ease), transform 180ms var(--ease);
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      .toast.err {
+        background: var(--stamp);
+      }
+
+      .ctx {
+        display: none;
+        position: fixed;
+        z-index: 40;
+        min-width: 228px;
+        background: #fff;
+        border: 2px solid var(--ink);
+        padding: 4px;
+      }
+
+      .ctx.open {
+        display: block;
+      }
+
+      .ctx button {
+        display: block;
+        width: 100%;
+        text-align: left;
+        background: transparent;
+        color: var(--ink);
+        border: 0;
+        box-shadow: none;
+        transform: none;
+        padding: 8px 10px;
+      }
+
+      .ctx button:hover,
+      .ctx button:focus-visible {
+        background: var(--ink);
+        color: var(--paper);
+        transform: none;
+        box-shadow: none;
+        outline: none;
+      }
+
+      .ctx .note {
+        margin: 6px 8px 6px;
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .toast,
+        button,
+        .btn {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app" id="app">
+      <header>
+        <h1>webp-paste</h1>
+        <p class="ticket">local · no upload · webp</p>
+      </header>
+      <p class="lede">
+        ⌘V 하면 WebP로 줄입니다. 가져갈 때는 미리보기 드래그, 우클릭 저장, 또는
+        WebP 저장을 쓰세요.
+      </p>
+
+      <section class="stage" id="stage" tabindex="0" aria-label="이미지 놓기">
+        <div class="hint">
+          <p><kbd>⌘V</kbd> 붙여넣기 · 끌어다 놓기</p>
+          <button type="button" class="ghost" id="pick">파일 선택</button>
+        </div>
+        <div class="preview-wrap">
+          <a id="previewLink" draggable="false">
+            <img id="preview" alt="변환된 WebP" draggable="true" />
+          </a>
+        </div>
+      </section>
+
+      <div class="meta" id="meta">
+        <div class="sizes">
+          <div>
+            <dl>
+              <dt>원본</dt>
+              <dd id="before">—</dd>
+            </dl>
+          </div>
+          <div class="after">
+            <dl>
+              <dt>WebP</dt>
+              <dd id="after">—</dd>
+            </dl>
+          </div>
+          <p class="delta" id="delta"></p>
+        </div>
+        <div class="toolbar">
+          <a class="btn" id="download" download="slim.webp">WebP 저장</a>
+        </div>
+      </div>
+      <footer>
+        품질 0.82. 긴 변 2560px 넘으면 축소. Chrome ‘이미지 복사’는 항상 PNG라
+        우클릭은 WebP 저장으로 바꿉니다.
+      </footer>
+    </main>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="ctx" id="ctx" role="menu" hidden>
+      <button type="button" role="menuitem" data-act="save">WebP 저장</button>
+      <button type="button" role="menuitem" data-act="open">새 탭에서 열기</button>
+      <p class="note">이미지 복사는 Chrome이 PNG로 넣습니다</p>
+    </div>
+    <script>
+      const QUALITY = 0.82;
+      const MAX_EDGE = 2560;
+
+      const app = document.getElementById("app");
+      const stage = document.getElementById("stage");
+      const preview = document.getElementById("preview");
+      const beforeEl = document.getElementById("before");
+      const afterEl = document.getElementById("after");
+      const deltaEl = document.getElementById("delta");
+      const download = document.getElementById("download");
+      const previewLink = document.getElementById("previewLink");
+      const pickBtn = document.getElementById("pick");
+      const toastEl = document.getElementById("toast");
+      const ctx = document.getElementById("ctx");
+
+      let webpBlob = null;
+      let objectUrl = "";
+      let ingestGen = 0;
+      let toastTimer = 0;
+
+      function bytes(n) {
+        if (n < 1024) return n + " B";
+        if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+        return (n / 1024 / 1024).toFixed(2) + " MB";
+      }
+
+      function toast(text, err) {
+        toastEl.textContent = text;
+        toastEl.classList.toggle("err", Boolean(err));
+        toastEl.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2400);
+      }
+
+      function showIncoming(file) {
+        const incoming = URL.createObjectURL(file);
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+        objectUrl = incoming;
+        preview.src = incoming;
+        app.classList.add("has-image");
+        stage.classList.add("has-image");
+        beforeEl.textContent = bytes(file.size);
+        afterEl.textContent = "…";
+        deltaEl.textContent = "변환 중…";
+      }
+
+      function fileFromClipboard(event) {
+        const items = event.clipboardData && event.clipboardData.items;
+        if (!items) return null;
+        for (const item of items) {
+          if (item.type.startsWith("image/")) return item.getAsFile();
+        }
+        const files = event.clipboardData && event.clipboardData.files;
+        if (files && files[0] && files[0].type.startsWith("image/")) return files[0];
+        return null;
+      }
+
+      async function toCompressed(file) {
+        const bitmap = await createImageBitmap(file);
+        let w = bitmap.width;
+        let h = bitmap.height;
+        const edge = Math.max(w, h);
+        if (edge > MAX_EDGE) {
+          const scale = MAX_EDGE / edge;
+          w = Math.round(w * scale);
+          h = Math.round(h * scale);
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(bitmap, 0, 0, w, h);
+        bitmap.close();
+        const webp = await new Promise((resolve, reject) => {
+          canvas.toBlob(
+            (b) => (b ? resolve(b) : reject(new Error("WebP를 만들지 못했습니다"))),
+            "image/webp",
+            QUALITY
+          );
+        });
+        if (!webp.type.includes("webp")) {
+          throw new Error("이 브라우저는 WebP 인코딩을 지원하지 않습니다");
+        }
+        return { webp, width: w, height: h };
+      }
+
+      async function ingest(file) {
+        if (!file || !file.type.startsWith("image/")) {
+          toast("이미지 파일이 아닙니다.", true);
+          return;
+        }
+        const gen = ++ingestGen;
+        showIncoming(file);
+        const originalSize = file.size;
+        try {
+          const { webp } = await toCompressed(file);
+          if (gen !== ingestGen) return;
+          webpBlob = webp;
+          const next = URL.createObjectURL(webp);
+          preview.src = next;
+          if (objectUrl) URL.revokeObjectURL(objectUrl);
+          objectUrl = next;
+          beforeEl.textContent = bytes(originalSize);
+          afterEl.textContent = bytes(webp.size);
+          const saved = 1 - webp.size / originalSize;
+          deltaEl.textContent =
+            saved > 0 ? "−" + Math.round(saved * 100) + "%" : "원본이 이미 작습니다";
+          const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+          const name = "slim-" + stamp + ".webp";
+          download.href = objectUrl;
+          download.download = name;
+          previewLink.href = objectUrl;
+          previewLink.download = name;
+          toast("변환됨. 드래그하거나 저장하세요.");
+        } catch (err) {
+          if (gen !== ingestGen) return;
+          toast(err.message, true);
+        }
+      }
+
+      function onPaste(event) {
+        const file = fileFromClipboard(event);
+        if (!file) return;
+        event.preventDefault();
+        event.stopPropagation();
+        ingest(file).catch((err) => toast(err.message, true));
+      }
+
+      window.addEventListener("paste", onPaste, true);
+
+      function pickFile() {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.tabIndex = -1;
+        input.style.cssText =
+          "position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0";
+        const cleanup = () => input.remove();
+        input.addEventListener("change", () => {
+          const file = input.files && input.files[0];
+          cleanup();
+          if (file) ingest(file).catch((err) => toast(err.message, true));
+        });
+        document.body.appendChild(input);
+        input.click();
+        window.addEventListener("focus", () => setTimeout(cleanup, 400), { once: true });
+      }
+
+      window.addEventListener(
+        "keydown",
+        (event) => {
+          if (!(event.metaKey || event.ctrlKey)) return;
+          if (event.key !== "v" && event.key !== "V") return;
+          const ae = document.activeElement;
+          if (ae && ae.tagName === "INPUT" && ae.type === "file") {
+            ae.blur();
+            event.preventDefault();
+            event.stopPropagation();
+            readClipboardImage();
+          }
+        },
+        true
+      );
+
+      async function readClipboardImage() {
+        if (!navigator.clipboard || !navigator.clipboard.read) return;
+        try {
+          const items = await navigator.clipboard.read();
+          for (const item of items) {
+            const type = item.types.find((t) => t.startsWith("image/"));
+            if (!type) continue;
+            const blob = await item.getType(type);
+            const file = new File([blob], "paste.png", { type: blob.type || "image/png" });
+            await ingest(file);
+            return;
+          }
+        } catch (err) {
+          toast("클립보드에서 이미지를 읽지 못했습니다. 끌어다 놓기를 쓰세요.", true);
+        }
+      }
+
+      pickBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        pickFile();
+      });
+      stage.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        pickFile();
+      });
+
+      ["dragenter", "dragover"].forEach((type) => {
+        stage.addEventListener(type, (event) => {
+          event.preventDefault();
+          stage.classList.add("hot");
+        });
+      });
+      stage.addEventListener("dragleave", () => stage.classList.remove("hot"));
+      stage.addEventListener("drop", (event) => {
+        event.preventDefault();
+        stage.classList.remove("hot");
+        const file = event.dataTransfer.files[0];
+        ingest(file).catch((err) => toast(err.message, true));
+      });
+
+      preview.addEventListener("dragstart", (event) => {
+        if (!webpBlob) return;
+        const file = new File([webpBlob], download.download, { type: "image/webp" });
+        event.dataTransfer.effectAllowed = "copy";
+        event.dataTransfer.items.add(file);
+        event.dataTransfer.setData(
+          "DownloadURL",
+          "image/webp:" + file.name + ":" + objectUrl
+        );
+      });
+
+      previewLink.addEventListener("click", (event) => {
+        event.preventDefault();
+      });
+
+      function closeCtx() {
+        ctx.classList.remove("open");
+        ctx.hidden = true;
+      }
+
+      function openCtx(x, y) {
+        ctx.hidden = false;
+        ctx.classList.add("open");
+        const pad = 8;
+        const w = ctx.offsetWidth;
+        const h = ctx.offsetHeight;
+        const left = Math.min(x, window.innerWidth - w - pad);
+        const top = Math.min(y, window.innerHeight - h - pad);
+        ctx.style.left = Math.max(pad, left) + "px";
+        ctx.style.top = Math.max(pad, top) + "px";
+        ctx.querySelector("button").focus();
+      }
+
+      preview.addEventListener("contextmenu", (event) => {
+        if (!webpBlob || event.shiftKey) return;
+        event.preventDefault();
+        openCtx(event.clientX, event.clientY);
+      });
+
+      ctx.addEventListener("click", (event) => {
+        const act = event.target && event.target.getAttribute("data-act");
+        if (!act) return;
+        closeCtx();
+        if (act === "save") {
+          download.click();
+          toast("WebP 저장");
+        } else if (act === "open" && objectUrl) {
+          window.open(objectUrl, "_blank", "noopener");
+        }
+      });
+
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeCtx();
+      });
+      window.addEventListener("pointerdown", (event) => {
+        if (!ctx.classList.contains("open")) return;
+        if (ctx.contains(event.target)) return;
+        closeCtx();
+      });
+      window.addEventListener("scroll", closeCtx, true);
+
+      window.__slim = { ingest, toCompressed, QUALITY, MAX_EDGE };
+    </script>
+  </body>
+</html>

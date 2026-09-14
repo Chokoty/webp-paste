@@ -138,12 +138,15 @@ sealed class App : Form
     readonly NotifyIcon tray;
     readonly ContextMenuStrip menu;
     readonly ToolStripMenuItem toggle;
+    readonly ToolStripMenuItem notifyToggle;
+    readonly ToolStripMenuItem sourceItem;
     readonly ToolStripMenuItem status;
     readonly ToolStripMenuItem save;
     string lastStatus = "복사하면 WebP로 바꿉니다";
     string? lastFile;
     bool converting;
     bool on;
+    bool notify;
 
     public App()
     {
@@ -155,15 +158,24 @@ sealed class App : Form
         Text = "webp-paste";
 
         on = LoadOn();
+        notify = LoadNotify();
         menu = new ContextMenuStrip();
         toggle = new ToolStripMenuItem("변환", null, (_, _) => Toggle())
         {
             Checked = on,
             CheckOnClick = false,
         };
+        notifyToggle = new ToolStripMenuItem("알림", null, (_, _) => ToggleNotify())
+        {
+            Checked = notify,
+            CheckOnClick = false,
+        };
+        sourceItem = new ToolStripMenuItem("") { Enabled = false, Visible = false };
         status = new ToolStripMenuItem(lastStatus) { Enabled = false };
         save = new ToolStripMenuItem("저장…", null, (_, _) => SaveLast()) { Enabled = false };
         menu.Items.Add(toggle);
+        menu.Items.Add(notifyToggle);
+        menu.Items.Add(sourceItem);
         menu.Items.Add(status);
         menu.Items.Add(save);
         menu.Items.Add(new ToolStripSeparator());
@@ -222,7 +234,7 @@ sealed class App : Form
                     if (ext == "webp") return;
                     if (ext is "png" or "jpg" or "jpeg" or "tif" or "tiff" or "bmp" or "heic" or "heif" or "avif")
                     {
-                        Start(path, null, new FileInfo(path).Length);
+                        Start(path, null, new FileInfo(path).Length, Path.GetFileName(path));
                         return;
                     }
                 }
@@ -233,7 +245,7 @@ sealed class App : Form
                 if (bmp is null) return;
                 using var ms = new MemoryStream();
                 bmp.Save(ms, ImageFormat.Png);
-                Start(null, ms.ToArray(), ms.Length);
+                Start(null, ms.ToArray(), ms.Length, null);
             }
         }
         catch (ExternalException)
@@ -242,7 +254,7 @@ sealed class App : Form
         }
     }
 
-    void Start(string? path, byte[]? bytes, long original)
+    void Start(string? path, byte[]? bytes, long original, string? sourceName)
     {
         converting = true;
         Task.Run(() =>
@@ -250,7 +262,7 @@ sealed class App : Form
             try
             {
                 var data = path is not null ? Convert.EncodeFile(path) : Convert.Encode(bytes!);
-                BeginInvoke((MethodInvoker)(() => Finish(data, original)));
+                BeginInvoke((MethodInvoker)(() => Finish(data, original, sourceName, path, bytes)));
             }
             catch (Exception ex)
             {
@@ -259,19 +271,30 @@ sealed class App : Form
         });
     }
 
-    void Finish(byte[] data, long original)
+    void Finish(byte[] data, long original, string? sourceName, string? origPath, byte[]? origBytes)
     {
         try
         {
             var url = Convert.WriteTemp(data);
             var files = new StringCollection { url };
-            Clipboard.SetFileDropList(files);
+
+            // ponytail: set both file-drop and bitmap; use original source (not re-decoded WebP) for speed
+            var bmp = origPath is not null ? new Bitmap(origPath) : new Bitmap(new MemoryStream(origBytes!));
+            var obj = new DataObject();
+            obj.SetFileDropList(files);
+            obj.SetImage(bmp);
+            Clipboard.SetDataObject(obj, true);
+            bmp.Dispose();
+
             lastFile = url;
+            sourceItem.Text = sourceName ?? "";
+            sourceItem.Visible = sourceName is not null;
             var saved = original > 0 ? 1 - data.Length / (double)original : 0;
             var delta = saved > 0 ? $" (−{(int)Math.Round(saved * 100)}%)" : "";
             lastStatus = $"{Convert.Bytes(original)} → {Convert.Bytes(data.Length)} WebP{delta}";
             Rebuild();
-            tray.ShowBalloonTip(2400, "webp-paste", lastStatus, ToolTipIcon.None);
+            if (notify)
+                tray.ShowBalloonTip(2400, sourceName ?? "webp-paste", lastStatus, ToolTipIcon.None);
         }
         catch (Exception ex)
         {
@@ -288,7 +311,8 @@ sealed class App : Form
         converting = false;
         lastStatus = message;
         Rebuild();
-        tray.ShowBalloonTip(2400, "webp-paste", message, ToolTipIcon.Error);
+        if (notify)
+            tray.ShowBalloonTip(2400, "webp-paste", message, ToolTipIcon.Error);
     }
 
     void Toggle()
@@ -296,6 +320,13 @@ sealed class App : Form
         on = !on;
         SaveOn();
         ApplyOnState();
+    }
+
+    void ToggleNotify()
+    {
+        notify = !notify;
+        SaveNotify();
+        notifyToggle.Checked = notify;
     }
 
     void ApplyOnState()
@@ -334,6 +365,7 @@ sealed class App : Form
     }
 
     static string OnPath() => Path.Combine(Convert.CacheDir(), "on");
+    static string NotifyPath() => Path.Combine(Convert.CacheDir(), "notify");
 
     bool LoadOn()
     {
@@ -352,6 +384,22 @@ sealed class App : Form
     void SaveOn()
     {
         try { File.WriteAllText(OnPath(), on ? "1" : "0"); } catch { }
+    }
+
+    bool LoadNotify()
+    {
+        try
+        {
+            var p = NotifyPath();
+            if (!File.Exists(p)) return true;
+            return File.ReadAllText(p).Trim() != "0";
+        }
+        catch { return true; }
+    }
+
+    void SaveNotify()
+    {
+        try { File.WriteAllText(NotifyPath(), notify ? "1" : "0"); } catch { }
     }
 
     protected override void Dispose(bool disposing)

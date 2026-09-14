@@ -8,12 +8,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   private var ignoreChange = 0
   private var lastChange = 0
   private var lastStatus = "복사하면 WebP로 바꿉니다"
+  private var lastSourceName: String?
   private var lastFile: URL?
   private var converting = false
   private var convertGen = 0
   private let toast = Toast()
 
   private let onKey = "webp-paste.on"
+  private let notifyKey = "webp-paste.notify"
 
   private var isOn: Bool {
     get {
@@ -21,6 +23,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
       return UserDefaults.standard.bool(forKey: onKey)
     }
     set { UserDefaults.standard.set(newValue, forKey: onKey) }
+  }
+
+  private var isNotify: Bool {
+    get {
+      if UserDefaults.standard.object(forKey: notifyKey) == nil { return true }
+      return UserDefaults.standard.bool(forKey: notifyKey)
+    }
+    set { UserDefaults.standard.set(newValue, forKey: notifyKey) }
   }
 
   private var format: OutputFormat {
@@ -75,6 +85,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     let myGen = convertGen
     let format = self.format
     let original = Converter.originalByteCount(pb: pb, file: file)
+    let sourceName = file?.lastPathComponent
     DispatchQueue.global(qos: .userInitiated).async { [weak self] in
       defer {
         DispatchQueue.main.async { self?.converting = false }
@@ -91,11 +102,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self.ignoreChange = NSPasteboard.general.changeCount
             self.lastChange = self.ignoreChange
             self.lastFile = url
+            self.lastSourceName = sourceName
             let saved = original > 0 ? 1 - Double(data.count) / Double(original) : 0
             let delta = saved > 0 ? " (−\(Int((saved * 100).rounded()))%)" : ""
             self.lastStatus = "\(Converter.bytes(original)) → \(Converter.bytes(data.count)) \(format.label)\(delta)"
             self.rebuildMenu()
-            self.toast.show(self.lastStatus)
+            if self.isNotify {
+              let text = sourceName.map { "\($0)\n\(self.lastStatus)" } ?? self.lastStatus
+              self.toast.show(text)
+            }
           } catch {
             self.fail("실패: \(error.localizedDescription)")
           }
@@ -116,6 +131,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     toggle.target = self
     menu.addItem(toggle)
 
+    let notifyItem = NSMenuItem(title: "알림", action: #selector(toggleNotify), keyEquivalent: "")
+    notifyItem.state = isNotify ? .on : .off
+    notifyItem.target = self
+    menu.addItem(notifyItem)
+
     let formatMenu = NSMenu()
     for f in OutputFormat.allCases {
       let item = NSMenuItem(title: f.label, action: #selector(pickFormat(_:)), keyEquivalent: "")
@@ -127,6 +147,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     let formatItem = NSMenuItem(title: "포맷", action: nil, keyEquivalent: "")
     formatItem.submenu = formatMenu
     menu.addItem(formatItem)
+
+    if let name = lastSourceName {
+      let nameItem = NSMenuItem(title: name, action: nil, keyEquivalent: "")
+      nameItem.isEnabled = false
+      menu.addItem(nameItem)
+    }
 
     let status = NSMenuItem(title: lastStatus, action: nil, keyEquivalent: "")
     status.isEnabled = false
@@ -147,8 +173,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
   private func fail(_ message: String) {
     lastStatus = message
+    lastSourceName = nil
     rebuildMenu()
-    toast.show(message, error: true)
+    if isNotify { toast.show(message, error: true) }
   }
 
   @objc private func saveLast() {
@@ -196,6 +223,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
       ignoreChange = NSPasteboard.general.changeCount
       lastChange = ignoreChange
     }
+    rebuildMenu()
+  }
+
+  @objc private func toggleNotify() {
+    isNotify.toggle()
     rebuildMenu()
   }
 

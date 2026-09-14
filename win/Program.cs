@@ -20,6 +20,14 @@ static class Native
 
     [DllImport("kernel32.dll")]
     public static extern bool AttachConsole(int pid);
+
+    [DllImport("kernel32.dll")]
+    public static extern IntPtr GetConsoleWindow();
+
+    [DllImport("user32.dll")]
+    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+    public const int SwHide = 0;
 }
 
 static class Convert
@@ -159,11 +167,7 @@ sealed class App : Form
         menu.Items.Add(status);
         menu.Items.Add(save);
         menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add(new ToolStripMenuItem("종료", null, (_, _) =>
-        {
-            tray.Visible = false;
-            Application.Exit();
-        }));
+        menu.Items.Add(new ToolStripMenuItem("종료", null, (_, _) => Application.Exit()));
 
         tray = new NotifyIcon
         {
@@ -372,6 +376,9 @@ static class Program
             Native.AttachConsole(Native.AttachParentProcess);
             return Convert.Cli(args[1], args[2]);
         }
+
+        var console = Native.GetConsoleWindow();
+        if (console != IntPtr.Zero) Native.ShowWindow(console, Native.SwHide);
 
         ApplicationConfiguration.Initialize();
         Application.Run(new App());

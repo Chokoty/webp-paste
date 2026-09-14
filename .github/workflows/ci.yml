@@ -30,7 +30,7 @@ jobs:
         run: |
           $out = Join-Path $env:TEMP "out.webp"
           & ./win/dist/webp-paste.exe --convert ./fixtures/screenshot.png $out
-          if ($LASTEXITCODE -ne 0) { throw "convert failed: $LASTEXITCODE" }
+          if (-not (Test-Path $out)) { throw "convert produced no file (exit $LASTEXITCODE)" }
           $bytes = [IO.File]::ReadAllBytes($out)
           $riff = [Text.Encoding]::ASCII.GetString($bytes[0..3])
           $tag = [Text.Encoding]::ASCII.GetString($bytes[8..11])

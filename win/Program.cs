@@ -226,7 +226,8 @@ sealed class App : Form
                 if (files.Count > 1) return;
                 if (files.Count == 1)
                 {
-                    var path = files[0]!;
+                    var path = files[0];
+                    if (string.IsNullOrEmpty(path)) return;
                     if (string.Equals(path, lastFile, StringComparison.OrdinalIgnoreCase)) return;
                     var ext = Path.GetExtension(path).TrimStart('.').ToLowerInvariant();
                     if (ext is "gif" or "pdf") return;

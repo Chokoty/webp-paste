@@ -1,9 +1,9 @@
 <h1 align="center">
-  <img src="../assets/icon.png" alt="webp-paste" width="72" valign="middle" /> webp-paste
+  <img src="../assets/icon.png" alt="clipslim" width="72" valign="middle" /> clipslim
 </h1>
 
 <p align="center">
-  <a href="https://github.com/Chokoty/webp-paste"><img src="https://img.shields.io/github/stars/Chokoty/webp-paste?style=flat&label=%E2%98%85&color=c43c11" alt="GitHub stars" /></a>
+  <a href="https://github.com/Chokoty/clipslim"><img src="https://img.shields.io/github/stars/Chokoty/clipslim?style=flat&label=%E2%98%85&color=c43c11" alt="GitHub stars" /></a>
   <img src="https://img.shields.io/badge/license-MIT-1a1612?style=flat" alt="License: MIT" />
   <img src="https://img.shields.io/badge/macOS%20%7C%20Windows-c43c11?style=flat" alt="Supported platforms: macOS and Windows" />
   <img src="https://img.shields.io/badge/local-no%20upload-2c6e49?style=flat" alt="Runs locally, no upload" />
@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <strong>复制截图，粘贴体积更小的 WebP 文件。</strong><br/>
+  <strong>复制图片，自动压缩为 WebP。</strong><br/>
   Mac 在菜单栏，Windows 在托盘。图片不会离开这台电脑。
 </p>
 
@@ -69,37 +69,37 @@ WebP 静态链接 libwebp（Homebrew 只在构建时需要）。AVIF 走 ImageIO
 
 ## 安装
 
-- **[从 Releases 下载](https://github.com/Chokoty/webp-paste/releases/latest)**
-- 直链：[macOS Apple Silicon](https://github.com/Chokoty/webp-paste/releases/latest/download/webp-paste-macos-arm64.zip) · [Windows x64](https://github.com/Chokoty/webp-paste/releases/latest/download/webp-paste-windows-x64.exe)
+- **[从 Releases 下载](https://github.com/Chokoty/clipslim/releases/latest)**
+- 直链：[macOS Apple Silicon](https://github.com/Chokoty/clipslim/releases/latest/download/clipslim-macos-arm64.zip) · [Windows x64](https://github.com/Chokoty/clipslim/releases/latest/download/clipslim-windows-x64.exe)
 
 ### macOS
 
-解压后打开 `webp-paste.app`。未签名：第一次请 **右键 → 打开**。
+解压后打开 `clipslim.app`。未签名：第一次请 **右键 → 打开**。
 
 或自行构建：
 
 ```bash
 brew install webp          # 仅构建时需要；应用链接 libwebp.a
 ./mac/build.sh
-open mac/dist/webp-paste.app
+open mac/dist/clipslim.app
 ```
 
 菜单栏图标打开 → 复制截图 → 粘贴到画布。原始 PNG：取消勾选 **변환**。格式：**포맷 → WebP / AVIF**。
 
-临时文件：`~/Library/Caches/webp-paste/`。
+临时文件：`~/Library/Caches/clipslim/`。
 
 ### Windows
 
-运行 `webp-paste-windows-x64.exe`。未签名：SmartScreen 可能会警告。运行不需要 .NET SDK。
+运行 `clipslim-windows-x64.exe`。未签名：SmartScreen 可能会警告。运行不需要 .NET SDK。
 
 或用 [.NET 8 SDK](https://dot.net) 构建：
 
 ```powershell
 ./win/build.ps1
-./win/dist/webp-paste.exe
+./win/dist/clipslim.exe
 ```
 
-托盘图标 → 复制 → `Ctrl+V`。只有 WebP（没有 AVIF）。临时文件：`%LOCALAPPDATA%\webp-paste\`。
+托盘图标 → 复制 → `Ctrl+V`。只有 WebP（没有 AVIF）。临时文件：`%LOCALAPPDATA%\clipslim\`。
 
 ## 网页备用（拖拽 / 保存）
 
@@ -125,7 +125,7 @@ ImageIO 不能写 WebP。细节见 [`docs/decisions/001-encode-backends.md`](../
 
 ```bash
 ./scripts/check.sh     # macOS：重新构建并编码 fixtures/screenshot.png
-git tag v1.0.1 && git push origin v1.0.1   # GitHub Release（macOS zip + Windows exe）
+git tag v1.0.3 && git push origin v1.0.3   # GitHub Release（macOS zip + Windows exe）
 ```
 
 `scripts/check.sh` 必须继续产出比测试图更小的 RIFF/WEBP。代理规则：[`AGENTS.md`](../../AGENTS.md)。规格：[`docs/superpowers/specs/`](../superpowers/specs/)。

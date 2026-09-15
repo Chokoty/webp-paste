@@ -1,9 +1,9 @@
 <h1 align="center">
-  <img src="../assets/icon.png" alt="webp-paste" width="72" valign="middle" /> webp-paste
+  <img src="../assets/icon.png" alt="clipslim" width="72" valign="middle" /> clipslim
 </h1>
 
 <p align="center">
-  <a href="https://github.com/Chokoty/webp-paste"><img src="https://img.shields.io/github/stars/Chokoty/webp-paste?style=flat&label=%E2%98%85&color=c43c11" alt="GitHub stars" /></a>
+  <a href="https://github.com/Chokoty/clipslim"><img src="https://img.shields.io/github/stars/Chokoty/clipslim?style=flat&label=%E2%98%85&color=c43c11" alt="GitHub stars" /></a>
   <img src="https://img.shields.io/badge/license-MIT-1a1612?style=flat" alt="License: MIT" />
   <img src="https://img.shields.io/badge/macOS%20%7C%20Windows-c43c11?style=flat" alt="Supported platforms: macOS and Windows" />
   <img src="https://img.shields.io/badge/local-no%20upload-2c6e49?style=flat" alt="Runs locally, no upload" />
@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <strong>スクリーンショットをコピーして、小さい WebP ファイルを貼り付けます。</strong><br/>
+  <strong>画像をコピーするだけで自動的に WebP へ圧縮します。</strong><br/>
   Mac はメニューバー、Windows はトレイ。画像はこのマシンの外に出ません。
 </p>
 
@@ -69,37 +69,37 @@ WebP は libwebp を静的リンクします（Homebrew はビルド時だけ）
 
 ## インストール
 
-- **[Releases から入手](https://github.com/Chokoty/webp-paste/releases/latest)**
-- 直接: [macOS Apple Silicon](https://github.com/Chokoty/webp-paste/releases/latest/download/webp-paste-macos-arm64.zip) · [Windows x64](https://github.com/Chokoty/webp-paste/releases/latest/download/webp-paste-windows-x64.exe)
+- **[Releases から入手](https://github.com/Chokoty/clipslim/releases/latest)**
+- 直接: [macOS Apple Silicon](https://github.com/Chokoty/clipslim/releases/latest/download/clipslim-macos-arm64.zip) · [Windows x64](https://github.com/Chokoty/clipslim/releases/latest/download/clipslim-windows-x64.exe)
 
 ### macOS
 
-zip を解凍して `webp-paste.app` を開きます。未署名なので、初回は **右クリック → 開く**。
+zip を解凍して `clipslim.app` を開きます。未署名なので、初回は **右クリック → 開く**。
 
 またはビルド:
 
 ```bash
 brew install webp          # ビルド時のみ。アプリは libwebp.a をリンクします
 ./mac/build.sh
-open mac/dist/webp-paste.app
+open mac/dist/clipslim.app
 ```
 
 メニューバーのアイコンがオン → スクリーンショットをコピー → キャンバスに貼る。元の PNG: **변환** のチェックを外す。形式: **포맷 → WebP / AVIF**。
 
-一時ファイル: `~/Library/Caches/webp-paste/`。
+一時ファイル: `~/Library/Caches/clipslim/`。
 
 ### Windows
 
-`webp-paste-windows-x64.exe` を実行します。未署名なので SmartScreen が警告することがあります。実行に .NET SDK は不要です。
+`clipslim-windows-x64.exe` を実行します。未署名なので SmartScreen が警告することがあります。実行に .NET SDK は不要です。
 
 または [.NET 8 SDK](https://dot.net) でビルド:
 
 ```powershell
 ./win/build.ps1
-./win/dist/webp-paste.exe
+./win/dist/clipslim.exe
 ```
 
-トレイアイコン → コピー → `Ctrl+V`。WebP のみ（AVIF なし）。一時ファイル: `%LOCALAPPDATA%\webp-paste\`。
+トレイアイコン → コピー → `Ctrl+V`。WebP のみ（AVIF なし）。一時ファイル: `%LOCALAPPDATA%\clipslim\`。
 
 ## Web フォールバック（ドラッグ / 保存）
 
@@ -125,7 +125,7 @@ ImageIO は WebP を書けません。詳細: [`docs/decisions/001-encode-backen
 
 ```bash
 ./scripts/check.sh     # macOS: 再ビルド + fixtures/screenshot.png をエンコード
-git tag v1.0.1 && git push origin v1.0.1   # GitHub Release（macOS zip + Windows exe）
+git tag v1.0.3 && git push origin v1.0.3   # GitHub Release（macOS zip + Windows exe）
 ```
 
 `scripts/check.sh` は、フィクスチャより小さい RIFF/WEBP を出し続けなければなりません。エージェント向けの規則: [`AGENTS.md`](../../AGENTS.md)。仕様: [`docs/superpowers/specs/`](../superpowers/specs/)。

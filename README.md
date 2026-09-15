@@ -1,9 +1,9 @@
 <h1 align="center">
-  <img src="docs/assets/icon.png" alt="webp-paste" width="72" valign="middle" /> webp-paste
+  <img src="docs/assets/icon.png" alt="clipslim" width="72" valign="middle" /> clipslim
 </h1>
 
 <p align="center">
-  <a href="https://github.com/Chokoty/webp-paste"><img src="https://img.shields.io/github/stars/Chokoty/webp-paste?style=flat&label=%E2%98%85&color=c43c11" alt="GitHub stars" /></a>
+  <a href="https://github.com/Chokoty/clipslim"><img src="https://img.shields.io/github/stars/Chokoty/clipslim?style=flat&label=%E2%98%85&color=c43c11" alt="GitHub stars" /></a>
   <img src="https://img.shields.io/badge/license-MIT-1a1612?style=flat" alt="License: MIT" />
   <img src="https://img.shields.io/badge/macOS%20%7C%20Windows-c43c11?style=flat" alt="Supported platforms: macOS and Windows" />
   <img src="https://img.shields.io/badge/local-no%20upload-2c6e49?style=flat" alt="Runs locally, no upload" />
@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <strong>Copy a screenshot. Paste a small WebP file.</strong><br/>
+  <strong>Copy any image — automatically compressed to WebP.</strong><br/>
   Menu bar on Mac, tray on Windows. The image never leaves the machine.
 </p>
 
@@ -67,37 +67,37 @@ Same quality and max edge. Clipboard write is a file drop list, not a DIB, so ca
 
 ## Install
 
-- **[Download from Releases](https://github.com/Chokoty/webp-paste/releases/latest)**
-- Direct: [macOS Apple Silicon](https://github.com/Chokoty/webp-paste/releases/latest/download/webp-paste-macos-arm64.zip) · [Windows x64](https://github.com/Chokoty/webp-paste/releases/latest/download/webp-paste-windows-x64.exe)
+- **[Download from Releases](https://github.com/Chokoty/clipslim/releases/latest)**
+- Direct: [macOS Apple Silicon](https://github.com/Chokoty/clipslim/releases/latest/download/clipslim-macos-arm64.zip) · [Windows x64](https://github.com/Chokoty/clipslim/releases/latest/download/clipslim-windows-x64.exe)
 
 ### macOS
 
-Unzip and open `webp-paste.app`. Unsigned: first launch is **right-click → Open**.
+Unzip and open `clipslim.app`. Unsigned: first launch is **right-click → Open**.
 
 Or build:
 
 ```bash
 brew install webp          # build only; the app links libwebp.a
 ./mac/build.sh
-open mac/dist/webp-paste.app
+open mac/dist/clipslim.app
 ```
 
 Menu bar icon on → copy a screenshot → paste into the canvas. Original PNG: uncheck **변환**. Format: **포맷 → WebP / AVIF**.
 
-Temps: `~/Library/Caches/webp-paste/`.
+Temps: `~/Library/Caches/clipslim/`.
 
 ### Windows
 
-Run `webp-paste-windows-x64.exe`. Unsigned: SmartScreen may warn. No .NET SDK needed to run.
+Run `clipslim-windows-x64.exe`. Unsigned: SmartScreen may warn. No .NET SDK needed to run.
 
 Or build with [.NET 8 SDK](https://dot.net):
 
 ```powershell
 ./win/build.ps1
-./win/dist/webp-paste.exe
+./win/dist/clipslim.exe
 ```
 
-Tray icon → copy → `Ctrl+V`. WebP only (no AVIF). Temps: `%LOCALAPPDATA%\webp-paste\`.
+Tray icon → copy → `Ctrl+V`. WebP only (no AVIF). Temps: `%LOCALAPPDATA%\clipslim\`.
 
 ## Web fallback
 
@@ -123,7 +123,7 @@ ImageIO cannot write WebP. Details: [`docs/decisions/001-encode-backends.md`](do
 
 ```bash
 ./scripts/check.sh     # macOS: rebuild + encode fixtures/screenshot.png
-git tag v1.0.1 && git push origin v1.0.1   # GitHub Release (macOS zip + Windows exe)
+git tag v1.0.3 && git push origin v1.0.3   # GitHub Release (macOS zip + Windows exe)
 ```
 
 `scripts/check.sh` must keep producing a RIFF/WEBP smaller than the fixture. Agent rules: [`AGENTS.md`](AGENTS.md). Specs: [`docs/superpowers/specs/`](docs/superpowers/specs/).

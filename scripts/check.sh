@@ -1,12 +1,12 @@
 #!/bin/zsh
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-BIN="$ROOT/mac/dist/webp-paste.app/Contents/MacOS/WebPPaste"
+BIN="$ROOT/mac/dist/clipslim.app/Contents/MacOS/ClipSlim"
 
 "$ROOT/mac/build.sh"
 
-webp="$(mktemp /tmp/webp-paste.XXXXXX.webp)"
-avif="$(mktemp /tmp/webp-paste.XXXXXX.avif)"
+webp="$(mktemp /tmp/clipslim.XXXXXX.webp)"
+avif="$(mktemp /tmp/clipslim.XXXXXX.avif)"
 trap 'rm -f "$webp" "$avif"' EXIT
 
 "$BIN" --convert "$ROOT/fixtures/screenshot.png" "$webp"

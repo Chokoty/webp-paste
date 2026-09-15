@@ -6,9 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWindowsForms>true</UseWindowsForms>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
-    <AssemblyName>webp-paste</AssemblyName>
-    <RootNamespace>WebpPaste</RootNamespace>
-    <Version>1.0.0</Version>
+    <AssemblyName>clipslim</AssemblyName>
+    <RootNamespace>ClipSlim</RootNamespace>
+    <Version>1.0.3</Version>
     <ApplicationIcon>../docs/assets/icon.ico</ApplicationIcon>
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>

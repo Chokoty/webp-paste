@@ -1,6 +1,6 @@
 # Agent notes
 
-Local clipboard converter. Images never leave the machine. No server, no accounts, no extra UI.
+Local clipboard compressor. Copy an image → clipboard becomes a small WebP (or AVIF on Mac) file automatically. Images never leave the machine. No server, no accounts, no extra UI.
 
 ## Skills
 
@@ -13,7 +13,7 @@ Use **ponytail** (simplest thing that works) and **superpowers** (TDD, verify be
 ./mac/build.sh              # macOS app only
 # Windows (PowerShell):
 ./win/build.ps1
-./win/dist/webp-paste.exe --convert fixtures/screenshot.png out.webp
+./win/dist/clipslim.exe --convert fixtures/screenshot.png out.webp
 ```
 
 Needs Homebrew `webp` on macOS (`libwebp.a` + `libsharpyuv.a`, statically linked). Windows encode is ImageSharp (pure managed). Runtime brew is not required on Mac.
@@ -23,7 +23,7 @@ Needs Homebrew `webp` on macOS (`libwebp.a` + `libsharpyuv.a`, statically linked
 - Copy image → clipboard becomes a **file** (WebP, or AVIF on Mac), not a PNG payload. Canvases (tldraw / Excalidraw) take the file on paste.
 - Quality 82, long edge 2560, keep 12 temp files.
 - Skip: GIF, PDF, multiple files, already the selected format, our own write, convert-off.
-- Do not delete user files. Temps: `~/Library/Caches/webp-paste/` (Mac), `%LOCALAPPDATA%\webp-paste\` (Windows).
+- Do not delete user files. Temps: `~/Library/Caches/clipslim/` (Mac), `%LOCALAPPDATA%\clipslim\` (Windows).
 - Windows is WebP only. AVIF is Mac ImageIO.
 
 ## Layout
@@ -38,8 +38,8 @@ Needs Homebrew `webp` on macOS (`libwebp.a` + `libsharpyuv.a`, statically linked
 Push a version tag. Actions builds Mac + Windows and publishes GitHub Releases.
 
 ```bash
-git tag v1.0.1
-git push origin v1.0.1
+git tag v1.0.3
+git push origin v1.0.3
 ```
 
-Do not attach binaries by hand unless the workflow is down. Asset names must stay `webp-paste-macos-arm64.zip` and `webp-paste-windows-x64.exe`.
+Do not attach binaries by hand unless the workflow is down. Asset names must stay `clipslim-macos-arm64.zip` and `clipslim-windows-x64.exe`.

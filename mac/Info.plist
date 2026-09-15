@@ -5,13 +5,13 @@
   <key>CFBundleDevelopmentRegion</key>
   <string>ko</string>
   <key>CFBundleExecutable</key>
-  <string>WebPPaste</string>
+  <string>ClipSlim</string>
   <key>CFBundleIdentifier</key>
-  <string>com.chokoty.webp-paste</string>
+  <string>com.chokoty.clipslim</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundleName</key>
-  <string>webp-paste</string>
+  <string>clipslim</string>
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>
